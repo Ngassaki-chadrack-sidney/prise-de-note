@@ -7,8 +7,8 @@ export async function POST() {
   );
 
   // Supprimer les cookies
-  response.cookies.delete("token");
-  response.cookies.delete("refreshToken");
+  response.cookies.delete("token", { path: "/" });
+  response.cookies.delete("refreshToken", { path: "/" });
 
   return response;
 }

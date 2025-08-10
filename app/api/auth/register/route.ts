@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, validatePassword } from "@/lib/password";
 import { signToken, signRefreshToken } from "@/lib/jwt";
-import { toast } from "sonner";
-import { success } from "zod";
+// Removed unused imports
 
 export async function POST(request: NextRequest) {
   try {

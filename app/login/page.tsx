@@ -57,48 +57,61 @@ export default function page() {
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
-                placeholder="johndoe@gmail.com"
+                id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                aria-label="Email"
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Mot de passe</Label>
               <div className="relative">
                 <Input
+                  id="password"
                   placeholder="**********"
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  aria-label="Mot de passe"
+                  autoComplete="current-password"
                 />
                 <Button
                   variant={"outline"}
                   className="absolute right-0 top-0"
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                  aria-label={
+                    showPassword
+                      ? "Masquer le mot de passe"
+                      : "Afficher le mot de passe"
+                  }
                 >
                   {showPassword ? <EyeOff /> : <Eye />}
                 </Button>
               </div>
             </div>
+            {error && (
+              <div className="text-red-500 text-sm text-center">
+                Identifiants invalides ou erreur serveur.
+              </div>
+            )}
             <Button
               variant={"default"}
               type="submit"
               className="w-full"
-              onClick={() => {
-                setIsLoading(!isLoading);
-              }}
+              disabled={isLoading}
+              aria-busy={isLoading}
             >
               {isLoading ? (
                 <div className="flex gap-1.5">
-                  {" "}
                   <Loader2 className="h-4 w-4 animate-spin" /> Chargement...
                 </div>
               ) : (
-                <div>creer le compte</div>
+                <div>Se connecter</div>
               )}
             </Button>
           </form>

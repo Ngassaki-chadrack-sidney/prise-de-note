@@ -1,5 +1,15 @@
 "use client";
 
+import {
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -62,6 +72,56 @@ export default function Home() {
                   >
                     se deconnecter
                   </Button>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <AlertDialogAction>
+                    <AlertDialogTrigger>
+                      <Button variant={"destructive"} className="w-full">
+                        Supprimer mon compte
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Voulez-vous vraiment supprimer votre compte?
+                      </AlertDialogTitle>
+                      <AlertDialogContent>
+                        <AlertDialogDescription>
+                          Cette action est irrervible voulez-vous vraiment
+                          continuer
+                        </AlertDialogDescription>
+                      </AlertDialogContent>
+                      <AlertDialogFooter>
+                        <AlertDialogAction>
+                          <Button
+                            variant={"destructive"}
+                            onClick={async () => {
+                              const response = await fetch(
+                                "/api/auth/del-account",
+                                {
+                                  method: "DELETE",
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                  },
+                                  body: JSON.stringify(user?.email),
+                                }
+                              );
+
+                              const data = response.json();
+
+                              if (!data.ok) {
+                                throw new Error(
+                                  "Impossible de supprimer le user"
+                                );
+                              }
+                            }}
+                          >
+                            oui
+                          </Button>
+                        </AlertDialogAction>
+                        <AlertDialogCancel>non</AlertDialogCancel>
+                      </AlertDialogFooter>
+                    </AlertDialogHeader>
+                  </AlertDialogAction>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Button variant={"ghost"} className="w-full">

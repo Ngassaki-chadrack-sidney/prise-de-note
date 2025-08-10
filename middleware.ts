@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/jwt";
 
 // Routes qui nécessitent une authentification
-const protectedRoutes = ["/"];
+const protectedRoutes: string[] = ["/"];
 
 // Routes publiques (même si connecté)
-const publicRoutes = ["/login", "/sign-in", "/"];
+const publicRoutes = ["/login", "/sign-in"];
 
 // Routes d'authentification (redirection si déjà connecté)
 const authRoutes = ["/login", "/sign-in"];
@@ -21,10 +21,11 @@ export async function middleware(request: NextRequest) {
       await verifyToken(token);
       isAuthenticated = true;
     } catch (error) {
-      // Token invalide, supprimer le cookie
+      // Token invalide, supprimer le cookie et retourner la réponse
       const response = NextResponse.next();
       response.cookies.delete("token");
       response.cookies.delete("refreshToken");
+      return response;
     }
   }
 
