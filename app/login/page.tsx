@@ -13,11 +13,11 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { Router, useRouter } from "next/router";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
-export default function page() {
+export default function Page() {
+  // Changed 'page' to 'Page' (component names should be PascalCase)
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -60,6 +60,7 @@ export default function page() {
                 id="email"
                 type="email"
                 value={email}
+                placeholder="john deo"
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 aria-label="Email"

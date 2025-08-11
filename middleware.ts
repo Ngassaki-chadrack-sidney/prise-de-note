@@ -1,61 +1,37 @@
-import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/jwt";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { verifyToken } from "./lib/jwt";
 
-// Routes qui nécessitent une authentification
-const protectedRoutes: string[] = ["/"];
+export async function middleware(req: NextRequest) {
+  const token = req.cookies.get("token")?.value;
 
-// Routes publiques (même si connecté)
-const publicRoutes = ["/login", "/sign-in"];
+  const isAuthRoute = req.nextUrl.pathname.startsWith("/login");
 
-// Routes d'authentification (redirection si déjà connecté)
-const authRoutes = ["/login", "/sign-in"];
+  // Si pas de token et pas sur /login => redirection vers /login
+  if (!token && !isAuthRoute) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
 
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const token = request.cookies.get("token")?.value;
-
-  // Vérifier si l'utilisateur est authentifié
-  let isAuthenticated = false;
+  // Si token présent
   if (token) {
-    try {
-      await verifyToken(token);
-      isAuthenticated = true;
-    } catch (error) {
-      // Token invalide, supprimer le cookie et retourner la réponse
-      const response = NextResponse.next();
-      response.cookies.delete("token");
-      response.cookies.delete("refreshToken");
-      return response;
+    const payload = await verifyToken(token);
+    if (!payload) {
+      // Token invalide -> supprimer les cookies et redirection vers login
+      const res = NextResponse.redirect(new URL("/login", req.url));
+      res.cookies.delete("token");
+      res.cookies.delete("refreshToken");
+      return res;
     }
-  }
 
-  // Redirection si tentative d'accès à une route protégée sans authentification
-  if (
-    protectedRoutes.some((route) => pathname.startsWith(route)) &&
-    !isAuthenticated
-  ) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("callbackUrl", pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  // Redirection si tentative d'accès aux pages d'auth en étant déjà connecté
-  if (authRoutes.includes(pathname) && isAuthenticated) {
-    return NextResponse.redirect(new URL("/", request.url));
+    // Si l'utilisateur est sur /login alors qu'il est déjà connecté -> rediriger vers /
+    if (isAuthRoute) {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Matcher pour toutes les routes sauf :
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
-  ],
+  matcher: ["/", "/dashboard/:path*"], // Routes protégées
 };

@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function page() {
@@ -34,7 +34,7 @@ export default function page() {
 
     try {
       await register(email, password, name);
-      router.push("/dashboard");
+      router.push("/");
     } catch (error: any) {
       setError(error.message);
     } finally {
