@@ -15,16 +15,18 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "react-toastify";
 
 export default function Page() {
   // Changed 'page' to 'Page' (component names should be PascalCase)
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [name, setName] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState("");
 
-  const { login } = useAuth();
+  const { login, register } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -36,9 +38,11 @@ export default function Page() {
     setIsLoading(true);
 
     try {
-      await login(email, password);
-      router.push(callbackUrl);
+      await register(email, password, name);
+      toast.success("Inscription réussie !");
+      router.push("/");
     } catch (error: any) {
+      toast.error("Erreur : " + error.message);
       setError(error.message);
     } finally {
       setIsLoading(false);
@@ -64,6 +68,18 @@ export default function Page() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 aria-label="Email"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="name">Nom</Label>
+              <Input
+                id="name"
+                type="text"
+                value={name}
+                placeholder="John Deo"
+                onChange={(e) => setName(e.target.value)}
+                required
+                aria-label="Nom"
               />
             </div>
             <div className="space-y-2">

@@ -15,6 +15,8 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function page() {
   const [email, setEmail] = useState<string>("");
@@ -34,8 +36,10 @@ export default function page() {
 
     try {
       await register(email, password, name);
+      toast.success("Inscription réussie !");
       router.push("/");
     } catch (error: any) {
+      toast.error("Erreur : " + error.message);
       setError(error.message);
     } finally {
       setIsLoading(false);
