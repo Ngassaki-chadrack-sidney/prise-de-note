@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Prise de Note
 
-## Getting Started
+Ceci est une application de prise de notes moderne et intuitive développée avec [Next.js](https://nextjs.org). L'application permet aux utilisateurs de créer, gérer et organiser leurs notes personnelles avec une interface utilisateur élégante et réactive.
 
-First, run the development server:
+## Fonctionnalités
+
+- **Création et édition de notes** : Créez facilement de nouvelles notes et modifiez-les avec un éditeur riche (EditorJS)
+- **Organisation intuitive** : Visualisez et gérez toutes vos notes dans une interface claire
+- **Authentification sécurisée** : Protégez vos notes avec un système d'authentification robuste
+- **Interface responsive** : Utilisez l'application sur tous vos appareils
+- **Stockage persistant** : Vos notes sont sauvegardées dans une base de données
+
+## Démarrage
+
+Premièrement, lancez le serveur de développement :
 
 ```bash
 npm run dev
-# or
+# ou
 yarn dev
-# or
+# ou
 pnpm dev
-# or
+# ou
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ouvrez [http://localhost:3000](http://localhost:3000) avec votre navigateur pour voir le résultat.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Vous pouvez commencer à éditer la page en modifiant `app/page.tsx`. La page se met à jour automatiquement lorsque vous modifiez le fichier.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Ce projet utilise [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) pour optimiser et charger automatiquement [Geist](https://vercel.com/font), une nouvelle famille de polices pour Vercel.
 
-## Learn More
+## Technologies utilisées
 
-To learn more about Next.js, take a look at the following resources:
+- **Frontend** : Next.js, React, Tailwind CSS
+- **Backend** : API Routes de Next.js
+- **Base de données** : Prisma avec SQLite
+- **Authentification** : JWT (JSON Web Tokens)
+- **Éditeur de texte** : EditorJS
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## En savoir plus
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Pour en savoir plus sur Next.js, consultez les ressources suivantes :
 
-## Deploy on Vercel
+- [Documentation Next.js](https://nextjs.org/docs) - découvrez les fonctionnalités et l'API de Next.js.
+- [Apprendre Next.js](https://nextjs.org/learn) - un tutoriel interactif Next.js.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Vous pouvez consulter [le dépôt GitHub de Next.js](https://github.com/vercel/next.js) - vos commentaires et contributions sont les bienvenus !
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Déploiement sur Vercel
+
+La façon la plus simple de déployer votre application Next.js est d'utiliser la [Plateforme Vercel](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) des créateurs de Next.js.
+
+Consultez notre [documentation de déploiement Next.js](https://nextjs.org/docs/app/building-your-application/deploying) pour plus de détails.
