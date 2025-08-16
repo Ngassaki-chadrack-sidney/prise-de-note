@@ -28,23 +28,35 @@ import {
   Trash2,
   Sparkles,
   BookOpen,
+  Edit3,
+  ArrowLeft,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, scale, easeOut } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { toast } from "react-toastify";
+import NotesEditor, { NoteData } from "@/components/NoteEditor";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function Home() {
   const [search, setSearch] = useState<string>("");
   const [darkMode, setDarkmode] = useState<boolean>(false);
   const [selectedNote, setSelectedNote] = useState<string | null>(null);
-  const [isCreatingNote, setIsCreatingNote] = useState(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
   const { user, logout } = useAuth();
   const [notes, setNotes] = useState<any[]>([]);
   const [newNote, setNewNote] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
-
-  const NoteRef = useRef<HTMLInputElement>(null);
 
   // Fonction pour créer une note
   async function CreateNote(title: string, content?: string) {
@@ -54,7 +66,7 @@ export default function Home() {
     }
 
     try {
-      console.log("Création de la note:", { title, content }); // Pour le débogage
+      console.log("Création de la note:", { title, content });
 
       const response = await fetch("/api/notes", {
         method: "POST",
@@ -66,7 +78,7 @@ export default function Home() {
       });
 
       const responseData = await response.json();
-      console.log("Réponse API:", response.status, responseData); // Pour le débogage
+      console.log("Réponse API:", response.status, responseData);
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -81,6 +93,12 @@ export default function Home() {
       toast.success("Note créée avec succès");
       setNewNote("");
       await GetAllNote(); // Recharger les notes
+
+      // Sélectionner la nouvelle note et passer en mode édition
+      if (responseData.id) {
+        setSelectedNote(responseData.id);
+        setIsEditing(true);
+      }
     } catch (error) {
       console.error("Erreur CreateNote:", error);
       toast.error("Erreur lors de la création de la note");
@@ -129,12 +147,119 @@ export default function Home() {
         return;
       }
       toast.success("Note supprimée avec succès");
+      setSelectedNote(null); // Désélectionner la note
+      setIsEditing(false); // Sortir du mode édition
       await GetAllNote(); // Recharger les notes
     } catch (error) {
       console.error("Erreur DeleteNote:", error);
       toast.error("Erreur lors de la suppression");
     }
   }
+
+  // Fonction pour sauvegarder une note avec le contenu Editor.js
+  const handleSaveNote = async (noteData: NoteData) => {
+    try {
+      const url = noteData.id ? `/api/notes/${noteData.id}` : "/api/notes";
+      const method = noteData.id ? "PATCH" : "POST";
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          title: noteData.title,
+          content: JSON.stringify(noteData.content), // Convertir le contenu Editor.js en JSON
+        }),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          toast.error("Session expirée, veuillez vous reconnecter");
+          logout();
+          return;
+        }
+        const errorData = await response.json();
+        toast.error(errorData.error || "Erreur lors de la sauvegarde");
+        return;
+      }
+
+      const savedNote = await response.json();
+      toast.success("Note sauvegardée avec succès");
+
+      // Recharger les notes pour avoir les dernières données
+      await GetAllNote();
+
+      // Si c'est une nouvelle note, la sélectionner
+      if (!noteData.id && savedNote.id) {
+        setSelectedNote(savedNote.id);
+      }
+    } catch (error) {
+      console.error("Erreur lors de la sauvegarde:", error);
+      toast.error("Erreur lors de la sauvegarde de la note");
+    }
+  };
+
+  // Fonction pour supprimer une note depuis l'éditeur
+  const handleDeleteNoteFromEditor = async (noteId: string) => {
+    await DeleteNote(noteId);
+  };
+
+  // Fonction pour supprimer un user
+  const handleUserDelete = async (email: string) => {
+    try {
+      const response = fetch("/api/auth/del-account", {
+        method: "DELETE",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(email),
+      });
+    } catch (error) {}
+  };
+  // Fonction pour obtenir les données d'une note sélectionnée
+  const getSelectedNoteData = (): NoteData | undefined => {
+    const note = filteredNotes.find((n) => n.id === selectedNote);
+    if (!note) return undefined;
+
+    let parsedContent;
+    try {
+      // Essayer de parser le contenu JSON s'il existe
+      parsedContent = note.content
+        ? JSON.parse(note.content)
+        : {
+            time: Date.now(),
+            blocks: [],
+            version: "2.28.2",
+          };
+    } catch (error) {
+      // Si le parsing échoue, créer une structure par défaut avec le contenu en tant que paragraphe
+      parsedContent = {
+        time: Date.now(),
+        blocks: note.content
+          ? [
+              {
+                id: "paragraph",
+                type: "paragraph",
+                data: {
+                  text: note.content,
+                },
+              },
+            ]
+          : [],
+        version: "2.28.2",
+      };
+    }
+
+    return {
+      id: note.id,
+      title: note.title,
+      content: parsedContent,
+      createdAt: note.createdAt ? new Date(note.createdAt) : undefined,
+      updatedAt: note.updatedAt ? new Date(note.updatedAt) : undefined,
+    };
+  };
 
   useEffect(() => {
     GetAllNote();
@@ -171,7 +296,6 @@ export default function Home() {
     hidden: { opacity: 0, scale: 0.9 },
     visible: {
       opacity: 1,
-      scale: 1,
       transition: { duration: 0.2 },
     },
     exit: {
@@ -218,6 +342,11 @@ export default function Home() {
                   placeholder="Titre de la note"
                   value={newNote}
                   onChange={(e) => setNewNote(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && newNote.trim()) {
+                      CreateNote(newNote);
+                    }
+                  }}
                   className="border-blue-200 focus-visible:ring-blue-400 rounded-lg"
                 />
                 <Button
@@ -240,7 +369,7 @@ export default function Home() {
                   : `Mes notes (${filteredNotes.length})`}
               </motion.h2>
 
-              <ScrollArea className="h-[calc(100vh-300px)] pr-2">
+              <ScrollArea className="h-[calc(100vh-300px)] pr-2 hidden_scrollBard">
                 <AnimatePresence>
                   {filteredNotes.length > 0 ? (
                     filteredNotes.map((note) => (
@@ -251,6 +380,8 @@ export default function Home() {
                         animate="visible"
                         exit="exit"
                         className="mb-3"
+                        whileTap={{ scale: 0.9 }}
+                        transition={{ ease: "easeOut", delay: 0.1 }}
                       >
                         <motion.div
                           className={`p-4 rounded-xl cursor-pointer transition-all duration-200 overflow-hidden ${
@@ -276,9 +407,6 @@ export default function Home() {
                               <Trash2 className="hover:text-white" />{" "}
                             </Button>
                           </div>
-                          <p className="text-sm text-gray-600 truncate mt-2">
-                            {note.content || "Aucun contenu"}
-                          </p>
                           <div className="text-xs text-gray-400 mt-3 flex items-center gap-1">
                             {note.updatedAt
                               ? new Date(note.updatedAt).toLocaleDateString()
@@ -350,32 +478,40 @@ export default function Home() {
                     </motion.button>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <motion.button
-                      className="w-full flex items-center gap-2 p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      Supprimer le compte
-                    </motion.button>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <motion.button
-                      onClick={() => setDarkmode(!darkMode)}
-                      className="w-full flex items-center gap-2 p-2 hover:bg-gray-50 rounded transition-colors"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      {darkMode ? (
-                        <>
-                          <Sun className="w-4 h-4" /> Mode clair
-                        </>
-                      ) : (
-                        <>
-                          <Moon className="w-4 h-4" /> Mode sombre
-                        </>
-                      )}
-                    </motion.button>
+                    <AlertDialog>
+                      <AlertDialogTrigger>
+                        <motion.button
+                          className="w-full flex items-center gap-2 p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
+                          whileHover={{ scale: 1.02 }}
+                          // whileTap={{ scale: 0.98 }}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          Supprimer le compte
+                        </motion.button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Supprimer le compte
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Êtes-vous sûr de vouloir supprimer votre compte ?
+                            Cette action est irréversible.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel className="bg-gray-200 hover:bg-gray-300">
+                            Annuler
+                          </AlertDialogCancel>
+                          <AlertDialogAction
+                            className="bg-red-600 text-white hover:bg-red-700"
+                            onClick={() => handleUserDelete(user?.email || "")}
+                          >
+                            Supprimer
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -394,36 +530,67 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
+            className="w-full max-w-5xl px-4"
           >
-            <Card className="h-full w-[800px] flex flex-col p-8 shadow-xl bg-white/90 backdrop-blur-sm rounded-xl border border-blue-100">
-              <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">
-                  {filteredNotes.find((n) => n.id === selectedNote)?.title}
-                </h1>
-                <div className="flex gap-2">
-                  <motion.button
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    Modifier
-                  </motion.button>
-                  <motion.button
-                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors shadow-md"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    Supprimer
-                  </motion.button>
+            {isEditing ? (
+              <div className="relative">
+                <motion.button
+                  onClick={() => setIsEditing(false)}
+                  className="absolute -top-16 left-0 z-10 flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors shadow-md"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Retour à la lecture
+                </motion.button>
+                <NotesEditor
+                  initialData={getSelectedNoteData()}
+                  onSave={handleSaveNote}
+                  onDelete={handleDeleteNoteFromEditor}
+                  readOnly={false}
+                  placeholder="Commencez à écrire votre note..."
+                />
+              </div>
+            ) : (
+              <Card className="w-full bg-white/90 backdrop-blur-sm rounded-xl border border-blue-100 shadow-xl">
+                <div className="p-8">
+                  <div className="flex items-center justify-between mb-6">
+                    <h1 className="text-3xl font-bold text-gray-800">
+                      {filteredNotes.find((n) => n.id === selectedNote)?.title}
+                    </h1>
+                    <div className="flex gap-2">
+                      <motion.button
+                        onClick={() => setIsEditing(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Edit3 className="w-4 h-4" />
+                        Modifier
+                      </motion.button>
+                      <motion.button
+                        onClick={() => DeleteNote(selectedNote)}
+                        className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors shadow-md"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        Supprimer
+                      </motion.button>
+                    </div>
+                  </div>
+                  <div className="bg-white rounded-lg border border-gray-100 shadow-inner">
+                    <NotesEditor
+                      initialData={getSelectedNoteData()}
+                      onSave={handleSaveNote}
+                      onDelete={handleDeleteNoteFromEditor}
+                      readOnly={true}
+                      placeholder="Cette note est vide..."
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="prose max-w-none mt-6 bg-gray-50 p-6 rounded-lg border border-gray-100 shadow-inner">
-                <p className="text-gray-700 leading-relaxed">
-                  {filteredNotes.find((n) => n.id === selectedNote)?.content ||
-                    "Aucun contenu disponible pour cette note."}
-                </p>
-              </div>
-            </Card>
+              </Card>
+            )}
           </motion.div>
         ) : (
           <motion.div

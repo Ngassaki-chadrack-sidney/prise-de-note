@@ -182,3 +182,7 @@ body {
     letter-spacing: var(--tracking-normal);
   }
 }
+
+.hidden_scrollBard::-webkit-scrollbar {
+  display: none;
+}
