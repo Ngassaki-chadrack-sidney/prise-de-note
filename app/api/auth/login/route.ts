@@ -64,15 +64,15 @@ export async function POST(request: NextRequest) {
     // Créer la réponse avec cookies sécurisés
     response.cookies.set("token", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: 60 * 60 * 24, // 1 jour
       path: "/",
     });
     response.cookies.set("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7, // 7 jours
       path: "/",
     });

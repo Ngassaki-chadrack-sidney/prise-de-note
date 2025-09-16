@@ -3,59 +3,57 @@ import { verifyToken } from "@/lib/jwt";
 import { prisma } from "@/lib/prisma";
 
 export async function DELETE(req: NextRequest) {
-  const body = await req.json();
-  const { email } = body;
-
-  // Verifier le users conmcete
+  // Vérifier l'authentification
   const token = req.cookies.get("token")?.value;
   if (!token) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   }
 
+  let userPayload;
   try {
-    const response = await verifyToken(token);
+    userPayload = await verifyToken(token);
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Token invalide" },
+      { status: 401 }
+    );
+  }
 
-    if (!response)
+  // Supprimer le compte de l'utilisateur authentifié
+  try {
+    await prisma.user.delete({
+      where: {
+        email: userPayload.email,
+      },
+    });
+
+    // Créer la réponse avec suppression du cookie
+    const response = NextResponse.json(
+      { message: "Compte supprimé avec succès" },
+      { status: 200 }
+    );
+
+    // Supprimer le cookie d'authentification
+    response.cookies.set("token", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      expires: new Date(0), // Expire immédiatement
+    });
+
+    return response;
+  } catch (error: any) {
+    // Gestion spécifique des erreurs Prisma
+    if (error.code === "P2025") {
       return NextResponse.json(
-        { error: "Une erreur est survenue lors de la vérification du token" },
-        { status: 401 }
+        { error: "Utilisateur non trouvé" },
+        { status: 404 }
       );
-  } catch (error) {
+    }
+
+    console.error("Erreur lors de la suppression du compte:", error);
     return NextResponse.json(
-      { error: "Une erreur est survenue" },
-      { status: 500 }
-    );
-  }
-
-  // Verifiier que le user existe dans la base de donnees
-  try {
-    const response = await prisma.user.findUnique({
-      where: {
-        email: email,
-      },
-    });
-
-    if (!response)
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-  } catch (error) {
-    return NextResponse.json(
-      { error: "Une erreur est survenue" },
-      { status: 500 }
-    );
-  }
-
-  try {
-    const response = await prisma.user.delete({
-      where: {
-        email: email,
-      },
-    });
-
-    if (!response)
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-  } catch (error) {
-    return NextResponse.json(
-      { error: "Une erreur est survenue" },
+      { error: "Erreur interne du serveur" },
       { status: 500 }
     );
   }

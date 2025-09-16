@@ -5,7 +5,8 @@ import { cn } from "@/lib/utils";
 import { forwardRef, useState } from "react";
 import { LucideIcon } from "lucide-react";
 
-interface AnimatedInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface AnimatedInputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   icon?: LucideIcon;
@@ -14,7 +15,19 @@ interface AnimatedInputProps extends React.InputHTMLAttributes<HTMLInputElement>
 }
 
 export const AnimatedInput = forwardRef<HTMLInputElement, AnimatedInputProps>(
-  ({ className, type, label, error, icon: Icon, variant = "default", animationType = "slide", ...props }, ref) => {
+  (
+    {
+      className,
+      type,
+      label,
+      error,
+      icon: Icon,
+      variant = "default",
+      animationType = "slide",
+      ...props
+    },
+    ref
+  ) => {
     const [isFocused, setIsFocused] = useState(false);
     const [hasValue, setHasValue] = useState(false);
 
@@ -35,15 +48,15 @@ export const AnimatedInput = forwardRef<HTMLInputElement, AnimatedInputProps>(
           stiffness: animationType === "bounce" ? 300 : undefined,
           damping: animationType === "bounce" ? 20 : undefined,
           duration: animationType === "bounce" ? undefined : 0.2,
-        }
+        },
       },
       error: {
         x: [-5, 5, -5, 5, 0],
         transition: {
           duration: 0.4,
-          ease: "easeInOut"
-        }
-      }
+          ease: "easeInOut",
+        },
+      },
     };
 
     const labelVariants = {
@@ -59,8 +72,8 @@ export const AnimatedInput = forwardRef<HTMLInputElement, AnimatedInputProps>(
         scale: variant === "floating" ? 0.85 : 1,
         opacity: 1,
         color: error ? "#ef4444" : "#3b82f6",
-        transition: { duration: 0.2, ease: "easeOut" }
-      }
+        transition: { duration: 0.2, ease: "easeOut" },
+      },
     };
 
     const iconVariants = {
@@ -71,8 +84,8 @@ export const AnimatedInput = forwardRef<HTMLInputElement, AnimatedInputProps>(
       focused: {
         color: error ? "#ef4444" : "#3b82f6",
         scale: 1.1,
-        transition: { duration: 0.2 }
-      }
+        transition: { duration: 0.2 },
+      },
     };
 
     const borderVariants = {
@@ -83,8 +96,8 @@ export const AnimatedInput = forwardRef<HTMLInputElement, AnimatedInputProps>(
       focused: {
         scaleX: 1,
         opacity: 1,
-        transition: { duration: 0.3, ease: "easeOut" }
-      }
+        transition: { duration: 0.3, ease: "easeOut" },
+      },
     };
 
     const handleFocus = () => {
@@ -107,11 +120,13 @@ export const AnimatedInput = forwardRef<HTMLInputElement, AnimatedInputProps>(
             className={cn(
               "absolute pointer-events-none text-sm font-medium transition-colors",
               variant === "floating" ? "top-3 left-3" : "top-0 left-0 mb-2",
-              error ? "text-red-500" : "text-gray-700"
+              error ? "text-red-500" : "text-white-700"
             )}
             variants={labelVariants}
             initial="initial"
-            animate={shouldLabelFloat || variant !== "floating" ? "focused" : "initial"}
+            animate={
+              shouldLabelFloat || variant !== "floating" ? "focused" : "initial"
+            }
           >
             {label}
           </motion.label>
@@ -142,10 +157,11 @@ export const AnimatedInput = forwardRef<HTMLInputElement, AnimatedInputProps>(
             className={cn(
               "flex h-12 w-full rounded-lg border-2 px-3 py-2 text-sm transition-all duration-200 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
               Icon && "pl-11",
-              variant === "filled" && "bg-gray-50 border-gray-200 focus:bg-white",
+              variant === "filled" &&
+                "bg-gray-50 border-gray-200 focus:bg-white",
               variant === "floating" && label && "pt-6 pb-2",
-              error 
-                ? "border-red-500 focus:border-red-500 bg-red-50/50" 
+              error
+                ? "border-red-500 focus:border-red-500 bg-red-50/50"
                 : "border-gray-200 focus:border-blue-500 bg-white hover:border-gray-300",
               className
             )}
@@ -204,100 +220,102 @@ export const AnimatedInput = forwardRef<HTMLInputElement, AnimatedInputProps>(
 AnimatedInput.displayName = "AnimatedInput";
 
 // Composant textarea animé
-interface AnimatedTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface AnimatedTextareaProps
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   error?: string;
   variant?: "default" | "floating" | "filled";
 }
 
-export const AnimatedTextarea = forwardRef<HTMLTextAreaElement, AnimatedTextareaProps>(
-  ({ className, label, error, variant = "default", ...props }, ref) => {
-    const [isFocused, setIsFocused] = useState(false);
-    const [hasValue, setHasValue] = useState(false);
+export const AnimatedTextarea = forwardRef<
+  HTMLTextAreaElement,
+  AnimatedTextareaProps
+>(({ className, label, error, variant = "default", ...props }, ref) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const [hasValue, setHasValue] = useState(false);
 
-    const handleFocus = () => setIsFocused(true);
-    const handleBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
-      setIsFocused(false);
-      setHasValue(e.target.value.length > 0);
-      props.onBlur?.(e);
-    };
+  const handleFocus = () => setIsFocused(true);
+  const handleBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
+    setIsFocused(false);
+    setHasValue(e.target.value.length > 0);
+    props.onBlur?.(e);
+  };
 
-    const shouldLabelFloat = variant === "floating" && (isFocused || hasValue);
+  const shouldLabelFloat = variant === "floating" && (isFocused || hasValue);
 
-    return (
-      <div className="relative w-full">
-        {label && (
-          <motion.label
-            className={cn(
-              "absolute pointer-events-none text-sm font-medium transition-colors z-10",
-              variant === "floating" ? "top-3 left-3" : "top-0 left-0 mb-2",
-              error ? "text-red-500" : "text-gray-700"
-            )}
-            initial={{
-              y: variant === "floating" ? 0 : -20,
-              x: variant === "floating" ? 12 : 0,
-              scale: 1,
-            }}
-            animate={{
-              y: shouldLabelFloat || variant !== "floating" ? -24 : 0,
-              x: shouldLabelFloat || variant !== "floating" ? 0 : 12,
-              scale: shouldLabelFloat || variant !== "floating" ? 0.85 : 1,
-              color: error ? "#ef4444" : isFocused ? "#3b82f6" : "#374151",
-            }}
-            transition={{ duration: 0.2 }}
-          >
-            {label}
-          </motion.label>
-        )}
-
-        <motion.div
-          className="relative"
-          initial={{ scale: 0.98, opacity: 0.9 }}
-          animate={{ 
-            scale: isFocused ? 1.01 : 1, 
-            opacity: 1,
+  return (
+    <div className="relative w-full">
+      {label && (
+        <motion.label
+          className={cn(
+            "absolute pointer-events-none text-sm font-medium transition-colors z-10",
+            variant === "floating" ? "top-3 left-3" : "top-0 left-0 mb-2",
+            error ? "text-red-500" : "text-white-700"
+          )}
+          initial={{
+            y: variant === "floating" ? 0 : -20,
+            x: variant === "floating" ? 12 : 0,
+            scale: 1,
+          }}
+          animate={{
+            y: shouldLabelFloat || variant !== "floating" ? -24 : 0,
+            x: shouldLabelFloat || variant !== "floating" ? 0 : 12,
+            scale: shouldLabelFloat || variant !== "floating" ? 0.85 : 1,
+            color: error ? "#ef4444" : isFocused ? "#3b82f6" : "#374151",
           }}
           transition={{ duration: 0.2 }}
         >
-          <textarea
-            className={cn(
-              "flex min-h-[120px] w-full rounded-lg border-2 px-3 py-3 text-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 resize-none",
-              variant === "filled" && "bg-gray-50 border-gray-200 focus:bg-white",
-              variant === "floating" && label && "pt-8 pb-3",
-              error 
-                ? "border-red-500 focus:border-red-500 bg-red-50/50" 
-                : "border-gray-200 focus:border-blue-500 bg-white hover:border-gray-300",
-              className
-            )}
-            ref={ref}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            {...props}
-          />
+          {label}
+        </motion.label>
+      )}
 
-          <motion.div
-            className={cn(
-              "absolute bottom-0 left-0 h-0.5 w-full origin-left",
-              error ? "bg-red-500" : "bg-blue-500"
-            )}
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: isFocused ? 1 : 0 }}
-            transition={{ duration: 0.3 }}
-          />
+      <motion.div
+        className="relative"
+        initial={{ scale: 0.98, opacity: 0.9 }}
+        animate={{
+          scale: isFocused ? 1.01 : 1,
+          opacity: 1,
+        }}
+        transition={{ duration: 0.2 }}
+      >
+        <textarea
+          className={cn(
+            "flex min-h-[120px] w-full rounded-lg border-2 px-3 py-3 text-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 resize-none",
+            variant === "filled" && "bg-gray-50 border-gray-200 focus:bg-white",
+            variant === "floating" && label && "pt-8 pb-3",
+            error
+              ? "border-red-500 focus:border-red-500 bg-red-50/50"
+              : "border-gray-200 focus:border-blue-500 bg-white hover:border-gray-300",
+            className
+          )}
+          ref={ref}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          {...props}
+        />
+
+        <motion.div
+          className={cn(
+            "absolute bottom-0 left-0 h-0.5 w-full origin-left",
+            error ? "bg-red-500" : "bg-blue-500"
+          )}
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: isFocused ? 1 : 0 }}
+          transition={{ duration: 0.3 }}
+        />
+      </motion.div>
+
+      {error && (
+        <motion.div
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-1 text-sm text-red-500"
+        >
+          {error}
         </motion.div>
-
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-1 text-sm text-red-500"
-          >
-            {error}
-          </motion.div>
-        )}
-      </div>
-    );
-  }
-);
+      )}
+    </div>
+  );
+});
 
 AnimatedTextarea.displayName = "AnimatedTextarea";

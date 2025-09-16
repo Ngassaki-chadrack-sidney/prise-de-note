@@ -63,7 +63,7 @@ export default function ForgotPasswordPage() {
           <div className="p-8">
             <div className="flex flex-col items-center mb-8">
               <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center mb-4">
-                <Lock className="w-8 h-8 text-white" />
+                <Lock className="w-8 h-8 text-foreground" />
               </div>
               <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent text-center">
                 Mot de passe oublié
@@ -75,7 +75,7 @@ export default function ForgotPasswordPage() {
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white-400" />
                       <Input
                         id="email"
                         type="email"
@@ -88,11 +88,11 @@ export default function ForgotPasswordPage() {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="password">Nouveau mot de passe</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white-400" />
                       <Input
                         id="password"
                         type={showPassword ? "text" : "password"}
@@ -147,7 +147,7 @@ export default function ForgotPasswordPage() {
 
             <CardFooter className="flex flex-col items-center space-y-4 pt-6 p-0">
               <div className="text-center">
-                <span className="text-gray-600 text-sm">
+                <span className="text-white-600 text-sm">
                   Vous vous souvenez de votre mot de passe ?{" "}
                 </span>
                 <Link

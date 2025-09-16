@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { ToastContainer } from "react-toastify";
+import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
   title: "APP de prise de notes",
@@ -16,10 +17,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AuthProvider>
-          <ToastContainer />
-          {children}
-        </AuthProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <AuthProvider>
+            <Toaster richColors position="top-right" />
+            {children}
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

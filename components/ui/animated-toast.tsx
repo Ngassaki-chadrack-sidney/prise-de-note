@@ -14,7 +14,13 @@ interface AnimatedToastProps {
   isVisible: boolean;
   onClose: () => void;
   duration?: number;
-  position?: "top-right" | "top-left" | "bottom-right" | "bottom-left" | "top-center" | "bottom-center";
+  position?:
+    | "top-right"
+    | "top-left"
+    | "bottom-right"
+    | "bottom-left"
+    | "top-center"
+    | "bottom-center";
 }
 
 export function AnimatedToast({
@@ -24,7 +30,7 @@ export function AnimatedToast({
   isVisible,
   onClose,
   duration = 5000,
-  position = "top-right"
+  position = "top-right",
 }: AnimatedToastProps) {
   useEffect(() => {
     if (isVisible && duration > 0) {
@@ -48,28 +54,28 @@ export function AnimatedToast({
       icon: "text-emerald-500",
       title: "text-emerald-800",
       message: "text-emerald-700",
-      progress: "bg-emerald-500"
+      progress: "bg-emerald-500",
     },
     error: {
       bg: "bg-red-50 border-red-200",
       icon: "text-red-500",
       title: "text-red-800",
       message: "text-red-700",
-      progress: "bg-red-500"
+      progress: "bg-red-500",
     },
     warning: {
       bg: "bg-yellow-50 border-yellow-200",
       icon: "text-yellow-500",
       title: "text-yellow-800",
       message: "text-yellow-700",
-      progress: "bg-yellow-500"
+      progress: "bg-yellow-500",
     },
     info: {
       bg: "bg-blue-50 border-blue-200",
       icon: "text-blue-500",
       title: "text-blue-800",
       message: "text-blue-700",
-      progress: "bg-blue-500"
+      progress: "bg-blue-500",
     },
   };
 
@@ -82,8 +88,16 @@ export function AnimatedToast({
     "bottom-center": "bottom-4 left-1/2 transform -translate-x-1/2",
   };
 
-  const slideDirection = position.includes("right") ? 300 : position.includes("left") ? -300 : 0;
-  const slideY = position.includes("top") ? -100 : position.includes("bottom") ? 100 : 0;
+  const slideDirection = position.includes("right")
+    ? 300
+    : position.includes("left")
+    ? -300
+    : 0;
+  const slideY = position.includes("top")
+    ? -100
+    : position.includes("bottom")
+    ? 100
+    : 0;
 
   const Icon = icons[type];
   const colorScheme = colors[type];
@@ -130,7 +144,7 @@ export function AnimatedToast({
             >
               <Icon className={cn("w-5 h-5 flex-shrink-0", colorScheme.icon)} />
             </motion.div>
-            
+
             <div className="flex-1 min-w-0">
               {title && (
                 <motion.h4
@@ -151,10 +165,10 @@ export function AnimatedToast({
                 {message}
               </motion.p>
             </div>
-            
+
             <motion.button
               onClick={onClose}
-              className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+              className="flex-shrink-0 text-white-400 hover:text-white-600 transition-colors"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               initial={{ opacity: 0 }}
@@ -164,7 +178,7 @@ export function AnimatedToast({
               <X className="w-4 h-4" />
             </motion.button>
           </div>
-          
+
           {/* Barre de progression */}
           {duration > 0 && (
             <motion.div
@@ -185,27 +199,34 @@ export function AnimatedToast({
 
 // Hook pour gérer les toasts
 export function useAnimatedToast() {
-  const [toasts, setToasts] = useState<Array<{
-    id: string;
-    type: ToastType;
-    title?: string;
-    message: string;
-    isVisible: boolean;
-  }>>([]);
+  const [toasts, setToasts] = useState<
+    Array<{
+      id: string;
+      type: ToastType;
+      title?: string;
+      message: string;
+      isVisible: boolean;
+    }>
+  >([]);
 
   const showToast = (type: ToastType, message: string, title?: string) => {
     const id = Math.random().toString(36).substr(2, 9);
-    setToasts(prev => [...prev, { id, type, title, message, isVisible: true }]);
+    setToasts((prev) => [
+      ...prev,
+      { id, type, title, message, isVisible: true },
+    ]);
   };
 
   const hideToast = (id: string) => {
-    setToasts(prev => prev.map(toast => 
-      toast.id === id ? { ...toast, isVisible: false } : toast
-    ));
-    
+    setToasts((prev) =>
+      prev.map((toast) =>
+        toast.id === id ? { ...toast, isVisible: false } : toast
+      )
+    );
+
     // Supprimer le toast après l'animation de sortie
     setTimeout(() => {
-      setToasts(prev => prev.filter(toast => toast.id !== id));
+      setToasts((prev) => prev.filter((toast) => toast.id !== id));
     }, 300);
   };
 
@@ -225,10 +246,14 @@ export function useAnimatedToast() {
   );
 
   return {
-    success: (message: string, title?: string) => showToast("success", message, title),
-    error: (message: string, title?: string) => showToast("error", message, title),
-    warning: (message: string, title?: string) => showToast("warning", message, title),
-    info: (message: string, title?: string) => showToast("info", message, title),
+    success: (message: string, title?: string) =>
+      showToast("success", message, title),
+    error: (message: string, title?: string) =>
+      showToast("error", message, title),
+    warning: (message: string, title?: string) =>
+      showToast("warning", message, title),
+    info: (message: string, title?: string) =>
+      showToast("info", message, title),
     ToastContainer,
   };
 }

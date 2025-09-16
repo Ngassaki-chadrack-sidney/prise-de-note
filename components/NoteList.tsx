@@ -13,7 +13,7 @@ export function NoteList({
   onNoteSelect,
 }: NoteListProps) {
   return (
-    <ScrollArea className="w-full p-1">
+    <ScrollArea className="w-full p-2">
       <div className="space-y-2 p-2">
         {notes.map((note) => (
           <div
