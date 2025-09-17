@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { NoteData } from "../lib/utils";
 import { FileDown, Save, Trash2 } from "lucide-react";
+import { Button } from "./ui/button";
 
 // Props du composant
 interface NotesEditorProps {
@@ -188,10 +189,11 @@ const NotesEditor: React.FC<NotesEditorProps> = ({
         <div className="flex items-center justify-between mt-4">
           <div className="flex items-center space-x-4">
             {!readOnly && onSave && (
-              <button
+              <Button
                 onClick={handleSave}
                 disabled={isSaving || !editorReady}
-                className="flex items-center px-4 py-2 bg-blue-600 text-foreground rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                variant={"default"}
+                className="flex items-center px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSaving ? (
                   <>
@@ -204,23 +206,25 @@ const NotesEditor: React.FC<NotesEditorProps> = ({
                     Sauvegarder
                   </>
                 )}
-              </button>
+              </Button>
             )}
 
-            <button
+            <Button
               onClick={handleExport}
               disabled={!editorReady}
-              className="flex items-center px-4 py-2 bg-gray-600 text-foreground rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              variant={"default"}
+              className="flex items-center px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <FileDown className="w-4 h-4 mr-2" />
               Exporter
-            </button>
+            </Button>
 
             {!readOnly && onDelete && initialData?.id && (
-              <button
+              <Button
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="flex items-center px-4 py-2 bg-red-600 text-foreground rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                variant={"destructive"}
+                className="flex items-center px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isDeleting ? (
                   <>
@@ -228,12 +232,12 @@ const NotesEditor: React.FC<NotesEditorProps> = ({
                     Suppression...
                   </>
                 ) : (
-                  <>
+                  <div className="flex gap-2 justify-center items-center text-foreground">
                     <Trash2 className="w-4 h-4 mr-2" />
                     Supprimer
-                  </>
+                  </div>
                 )}
-              </button>
+              </Button>
             )}
           </div>
 
@@ -250,7 +254,7 @@ const NotesEditor: React.FC<NotesEditorProps> = ({
       <div className="prose max-w-none">
         <div
           id="editorjs"
-          className="min-h-[400px] focus:outline-none"
+          className="min-h-[540px] focus:outline-none"
           style={{
             fontSize: "16px",
             lineHeight: "1.6",

@@ -58,8 +58,9 @@ export default function Home() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [newNote, setNewNote] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
-  const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -155,7 +156,7 @@ export default function Home() {
 
   // Fonction pour changer le thème
   const handleChangeTheme = () => {
-    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+    setTheme(theme === "dark" ? "light" : "dark");
   };
 
   const formatDate = (input?: string | Date): string => {
@@ -250,7 +251,7 @@ export default function Home() {
       <div className="w-120 min-h-screen">
         <div>
           <div className="border-r">
-            <div className="flex flex-col h-full justify-between">
+            <div className="flex flex-col h-full">
               <div className="p-4">
                 <div className="flex items-center gap-2 mb-8 border-b border-gray-200 pb-4">
                   <Image src="/favicon.ico" alt="Logo" width={80} height={80} />
@@ -271,6 +272,8 @@ export default function Home() {
                 </div>
               </div>
 
+              <div className="p-4 border-b" />
+
               <div className="p-4">
                 <div className="flex gap-2 mb-4">
                   <Input
@@ -290,7 +293,7 @@ export default function Home() {
                     disabled={!newNote}
                     aria-label="Créer une nouvelle note"
                   >
-                    <Plus className="w-5 h-5" />
+                    Ajouter la note
                   </Button>
                 </div>
 
@@ -304,38 +307,40 @@ export default function Home() {
                 <div className="h-[calc(100vh-300px)] pr-2 overflow-y-auto">
                   {filteredNotes.length > 0 ? (
                     <div>
-                      {filteredNotes.map((note) => (
-                        <div
-                          key={note.id}
-                          className={`p-3 rounded-md cursor-pointer transition-colors ${
-                            selectedNote === note.id
-                              ? "bg-muted"
-                              : "hover:bg-muted"
-                          }`}
-                          onClick={() => setSelectedNote(note.id)}
-                        >
-                          <div className="flex justify-between items-baseline">
-                            <h3 className="font-medium truncate">
-                              {note.title}
-                            </h3>
-                            <Button
-                              variant={"ghost"}
-                              size={"icon"}
-                              className=""
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                DeleteNote(note.id);
-                              }}
-                              aria-label={`Supprimer la note ${note.title}`}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+                      <div className="flex flex-col gap-2 max-h-[60vh] overflow-y-auto">
+                        {filteredNotes.map((note) => (
+                          <div
+                            key={note.id}
+                            className={`p-3 rounded-md cursor-pointer transition-colors ${
+                              selectedNote === note.id
+                                ? "bg-muted"
+                                : "hover:bg-muted"
+                            }`}
+                            onClick={() => setSelectedNote(note.id)}
+                          >
+                            <div className="flex justify-between items-baseline">
+                              <h3 className="font-medium truncate">
+                                {note.title}
+                              </h3>
+                              <Button
+                                variant={"ghost"}
+                                size={"icon"}
+                                className=""
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  DeleteNote(note.id);
+                                }}
+                                aria-label={`Supprimer la note ${note.title}`}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
+                              {formatDate(note.updatedAt as unknown as string)}
+                            </div>
                           </div>
-                          <div className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
-                            {formatDate(note.updatedAt as unknown as string)}
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   ) : (
                     <div className="text-center py-10">
@@ -385,58 +390,62 @@ export default function Home() {
                   </motion.div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem className="flex flex-col gap-2">
-                    <Button onClick={logout} variant="destructive">
-                      <LogOut className="w-4 h-4" />
-                      Se déconnecter
-                    </Button>
-                    <Button variant="ghost" onClick={() => handleChangeTheme()}>
-                      {mounted && resolvedTheme === "dark" ? (
-                        <div className="flex w-full items-center gap-2">
-                          <Sun className="w-4 h-4" /> Mode clair
-                        </div>
-                      ) : (
-                        <div className="flex w-full items-center gap-2">
-                          <Moon className="w-4 h-4" /> Mode sombre
-                        </div>
-                      )}
-                    </Button>
+                  <DropdownMenuItem
+                    onSelect={() => logout()}
+                    className="flex items-center gap-2"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Se déconnecter</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="destructive"
-                          className="w-full flex items-center gap-2"
-                          aria-label="Supprimer le compte"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                          Supprimer le compte
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            Supprimer le compte
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Êtes-vous sûr de vouloir supprimer votre compte ?
-                            Cette action est irréversible.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Annuler</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleUserDelete(user?.email || "")}
-                          >
-                            Supprimer
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                  <DropdownMenuItem
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      handleChangeTheme();
+                    }}
+                    className="flex items-center gap-2"
+                  >
+                    {mounted && theme === "dark" ? (
+                      <Sun className="w-4 h-4" />
+                    ) : (
+                      <Moon className="w-4 h-4" />
+                    )}
+                    <span>
+                      {mounted && theme === "dark"
+                        ? "Mode clair"
+                        : "Mode sombre"}
+                    </span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      setDeleteOpen(true);
+                    }}
+                    className="flex items-center gap-2 text-destructive focus:text-destructive"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    <span>Supprimer le compte</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+              <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Supprimer le compte</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Êtes-vous sûr de vouloir supprimer votre compte ? Cette
+                      action est irréversible.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => handleUserDelete(user?.email || "")}
+                    >
+                      Supprimer
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
         </div>
