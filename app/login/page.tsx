@@ -64,9 +64,9 @@ export default function LoginPage() {
         />
       </div>
       <div className="flex items-center justify-center p-6">
-        <Card className="w-full max-w-md border">
+        <Card className="w-full bg-background max-w-xl border-none shadow-none">
           <div className="p-6">
-            <div className="flex flex-col items-center mb-6">
+            <div className="flex flex-col items-center mb-6 gap-6">
               <LogIn className="w-8 h-8 mb-2" />
               <CardTitle className="text-2xl font-semibold">
                 Connexion
