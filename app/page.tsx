@@ -243,12 +243,12 @@ export default function Home() {
 
   return (
     <motion.div
-      className="flex min-h-screen w-full bg-background"
+      className="flex h-screen w-full bg-background overflow-hidden"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
-      <div className="w-120 min-h-screen">
+      <div className="w-120 h-screen overflow-hidden">
         <div>
           <div className="border-r">
             <div className="flex flex-col h-full">
@@ -304,7 +304,7 @@ export default function Home() {
                     : `Mes notes (${filteredNotes.length})`}
                 </h2>
 
-                <div className="h-[calc(100vh-300px)] pr-2 overflow-y-auto">
+                <div className="h-[300px] pr-2 overflow-y-auto custom-scroll">
                   {filteredNotes.length > 0 ? (
                     <div>
                       <div className="flex flex-col gap-2 max-h-[60vh] overflow-y-auto">
@@ -453,7 +453,7 @@ export default function Home() {
 
       {/* Zone principale */}
       <motion.div
-        className="min-h-screen w-full flex justify-center items-center"
+        className="min-h-screen w-full flex justify-center items-center overflow-y-hidden"
         variants={itemVariants}
       >
         {selectedNote ? (
@@ -483,7 +483,7 @@ export default function Home() {
                 />
               </div>
             ) : (
-              <Card className="w-full">
+              <Card className="w-full h-[80vh] overflow-y-auto scroll-auto">
                 <div className="p-8">
                   <div className="flex items-center justify-between mb-6">
                     <h1 className="text-2xl font-semibold">
