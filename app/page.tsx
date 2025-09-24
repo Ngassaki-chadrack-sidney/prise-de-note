@@ -466,8 +466,10 @@ export default function Home() {
             {isEditing ? (
               <div className="relative">
                 <motion.button
-                  onClick={() => setIsEditing(false)}
-                  className="absolute -top-16 left-0 z-10 flex items-center gap-2 px-4 py-2 bg-gray-600 text-foreground rounded-lg hover:bg-gray-700 transition-colors shadow-md"
+                  onClick={() => {
+                    setIsEditing(false);
+                  }}
+                  className="absolute -top-16 left-0 z-10 flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:opacity-90 transition-colors shadow-md"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -490,6 +492,18 @@ export default function Home() {
                       {filteredNotes.find((n) => n.id === selectedNote)?.title}
                     </h1>
                     <div className="flex gap-2">
+                      <motion.button
+                        onClick={() => {
+                          setSelectedNote(null);
+                          setIsEditing(false);
+                        }}
+                        className="flex items-center gap-2 px-3 py-2 bg-secondary text-secondary-foreground rounded-md"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <ArrowLeft className="w-4 h-4" />
+                        Quitter la note
+                      </motion.button>
                       <motion.button
                         onClick={() => setIsEditing(true)}
                         className="flex items-center gap-2 px-3 py-2 bg-primary text-primary-foreground rounded-md"

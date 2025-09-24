@@ -207,6 +207,47 @@ body {
   }
 }
 
+/* Styles spécifiques Editor.js pour une bonne lisibilité en dark mode */
+.ce-block__content,
+.ce-toolbar__content {
+  max-width: 100% !important;
+}
+
+#editorjs {
+  color: var(--foreground);
+}
+
+#editorjs .ce-paragraph {
+  color: var(--foreground);
+}
+
+#editorjs .ce-paragraph[data-placeholder]:empty::before {
+  color: var(--muted-foreground);
+}
+
+#editorjs .cdx-input::placeholder,
+#editorjs input::placeholder,
+#editorjs textarea::placeholder {
+  color: var(--muted-foreground);
+  opacity: 1;
+}
+
+#editorjs a {
+  color: var(--primary);
+}
+
+#editorjs .ce-toolbar__plus,
+#editorjs .ce-toolbar__settings-btn,
+#editorjs .ce-settings__button {
+  color: var(--foreground);
+}
+
+#editorjs .ce-toolbar__plus:hover,
+#editorjs .ce-toolbar__settings-btn:hover,
+#editorjs .ce-settings__button:hover {
+  background: var(--muted);
+}
+
 .hidden_scrollBard::-webkit-scrollbar {
   display: none;
 }

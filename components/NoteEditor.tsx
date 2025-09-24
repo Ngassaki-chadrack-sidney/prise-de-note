@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { NoteData } from "../lib/utils";
 import { FileDown, Save, Trash2 } from "lucide-react";
 import { Button } from "./ui/button";
+import { toast } from "sonner";
 
 // Props du composant
 interface NotesEditorProps {
@@ -48,7 +49,7 @@ const NotesEditor: React.FC<NotesEditorProps> = ({
           readOnly: readOnly,
           placeholder: placeholder,
           data: initialData?.content || {
-            time: 1640995200000, // Timestamp fixe pour éviter les problèmes d'hydratation
+            time: 1640995200000,
             blocks: [],
             version: "2.28.2",
           },
@@ -118,9 +119,10 @@ const NotesEditor: React.FC<NotesEditorProps> = ({
 
       await onSave(noteData);
       setLastSaved(new Date());
+
+      toast.success("Modification apporter avec success.");
     } catch (error) {
-      console.error("Erreur lors de la sauvegarde:", error);
-      alert("Erreur lors de la sauvegarde de la note");
+      toast.error("Erreur lors de la sauvegarde de la note");
     } finally {
       setIsSaving(false);
     }
@@ -130,16 +132,14 @@ const NotesEditor: React.FC<NotesEditorProps> = ({
   const handleDelete = async () => {
     if (!initialData?.id || !onDelete) return;
 
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer cette note ?")) {
-      try {
-        setIsDeleting(true);
-        await onDelete(initialData.id);
-      } catch (error) {
-        console.error("Erreur lors de la suppression:", error);
-        alert("Erreur lors de la suppression de la note");
-      } finally {
-        setIsDeleting(false);
-      }
+    try {
+      setIsDeleting(true);
+      await onDelete(initialData.id);
+    } catch (error) {
+      console.error("Erreur lors de la suppression:", error);
+      toast.error("Erreur lors de la suppression de la note");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -182,7 +182,7 @@ const NotesEditor: React.FC<NotesEditorProps> = ({
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Titre de la note..."
           disabled={readOnly}
-          className="w-full text-2xl font-bold border-none outline-none bg-transparent placeholder-gray-400 disabled:text-white-600"
+          className="w-full text-2xl font-bold border-none outline-none bg-transparent text-foreground placeholder:text-muted-foreground caret-primary disabled:text-muted-foreground"
         />
 
         {/* Barre d'actions */}
@@ -251,10 +251,10 @@ const NotesEditor: React.FC<NotesEditorProps> = ({
       </div>
 
       {/* Zone d'édition */}
-      <div className="prose max-w-none">
+      <div className="prose max-w-none text-foreground">
         <div
           id="editorjs"
-          className="min-h-[540px] focus:outline-none"
+          className="min-h-[540px] focus:outline-none caret-primary"
           style={{
             fontSize: "16px",
             lineHeight: "1.6",

@@ -25,9 +25,9 @@ export default function LoginPage() {
 
   const { login } = useAuth();
   const router = useRouter();
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
 
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  // const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   // React Hook Form avec validation Zod
   const {
@@ -44,7 +44,7 @@ export default function LoginPage() {
     try {
       await login(data.email, data.password);
       toast.success("Connexion réussie !");
-      router.push(callbackUrl);
+      router.push("/");
     } catch (error: any) {
       toast.error("Erreur : " + error.message);
       setError(error.message);
