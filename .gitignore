@@ -20,6 +20,8 @@
 # production
 /build
 
+CODEBASE.md
+
 # misc
 .DS_Store
 *.pem

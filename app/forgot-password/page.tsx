@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Mail, Lock, EyeOff, Eye } from "lucide-react";
 import Link from "next/link";
 import { toast } from "react-toastify";
-import { Alert } from "@/components/ui/alert";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -22,7 +21,6 @@ export default function ForgotPasswordPage() {
     setIsSubmitting(true);
     setIsError(false);
 
-    // Verifie si les infos sont valide avant de les envoyer dans la requete
     if (!email || !newPassword) {
       toast.error("Veuillez remplir tous les champs");
       setIsError(true);
@@ -30,7 +28,6 @@ export default function ForgotPasswordPage() {
       return;
     }
 
-    // Fetch vers la route pour mettres a jour le mot de passe
     try {
       const response = await fetch("/api/auth/forgot-password", {
         method: "POST",
@@ -43,6 +40,8 @@ export default function ForgotPasswordPage() {
       if (!response.ok) {
         toast.error("Erreur lors de la réinitialisation du mot de passe");
         setIsError(true);
+
+        window.location.href = "/login";
       } else {
         toast.success("Mot de passe réinitialisé avec succès!");
         setEmail("");
@@ -57,91 +56,90 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex justify-center items-center relative overflow-hidden bg-gradient-to-br from-[#667eea] via-[#764ba2] to-[#f093fb]">
-      <div className="relative z-10">
-        <Card className="w-full max-w-md mx-4 backdrop-blur-sm bg-white/95 shadow-2xl border-0">
-          <div className="p-8">
-            <div className="flex flex-col items-center mb-8">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center mb-4">
+    <div className="min-h-screen min-w-screen flex overflow-hidden">
+      <div className="h-screen w-1/2">
+        <video
+          src="./login.mp4"
+          className="inset-0 w-full h-full object-cover"
+        ></video>
+      </div>
+
+      <div className="flex w-1/2 items-center justify-center p-6">
+        <Card className="w-full bg-background max-w-xl border-none shadow-none">
+          <div className="p-6">
+            <div className="flex flex-col items-center mb-6 gap-6">
+              <div className="w-16 h-16 bg-background rounded-full flex items-center justify-center mb-4">
                 <Lock className="w-8 h-8 text-foreground" />
               </div>
-              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent text-center">
+              <CardTitle className="text-3xl font-bold text-center">
                 Mot de passe oublié
               </CardTitle>
             </div>
-            <CardContent>
-              <form onSubmit={handleSubmit}>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white-400" />
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="Entrez votre email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        disabled={isSubmitting}
-                        className="pl-12"
-                        required
-                      />
-                    </div>
+
+            <CardContent className="p-0">
+              <form onSubmit={handleSubmit} className="space-y-4 w-xl">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white-400" />
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="Entrez votre email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      disabled={isSubmitting}
+                      className="pl-12"
+                      required
+                    />
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Nouveau mot de passe</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white-400" />
-                      <Input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Entrez votre nouveau mot de passe"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        disabled={isSubmitting}
-                        className="pl-12 pr-12"
-                        required
-                        minLength={6}
-                      />
-                      <Button
-                        type="button"
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 h-auto p-1"
-                        onClick={() => setShowPassword(!showPassword)}
-                        variant="ghost"
-                        size="sm"
-                      >
-                        {showPassword ? (
-                          <EyeOff className="w-4 h-4" />
-                        ) : (
-                          <Eye className="w-4 h-4" />
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-
-                  {isError && (
-                    <Alert className="mt-2 p-4" variant="destructive">
-                      Une erreur est survenue. Veuillez vérifier vos
-                      informations et réessayer.
-                    </Alert>
-                  )}
-
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="animate-spin mr-2" />
-                        Réinitialisation...
-                      </>
-                    ) : (
-                      "Réinitialiser le mot de passe"
-                    )}
-                  </Button>
                 </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="password">Nouveau mot de passe</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white-400" />
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Entrez votre nouveau mot de passe"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      disabled={isSubmitting}
+                      className="pl-12 pr-12"
+                      minLength={6}
+                      required
+                    />
+                    <Button
+                      type="button"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 h-auto p-1"
+                      onClick={() => setShowPassword(!showPassword)}
+                      variant="ghost"
+                      size="sm"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="animate-spin mr-2" />
+                      Réinitialisation...
+                    </>
+                  ) : (
+                    "Réinitialiser le mot de passe"
+                  )}
+                </Button>
               </form>
             </CardContent>
 
@@ -150,10 +148,7 @@ export default function ForgotPasswordPage() {
                 <span className="text-white-600 text-sm">
                   Vous vous souvenez de votre mot de passe ?{" "}
                 </span>
-                <Link
-                  href="/login"
-                  className="text-purple-600 hover:text-purple-800 font-semibold transition-colors text-sm"
-                >
+                <Link href="/login" className="font-semibold text-sm">
                   Se connecter
                 </Link>
               </div>

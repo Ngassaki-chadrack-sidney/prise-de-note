@@ -19,7 +19,7 @@ export default function RootLayout({
       <body>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>
-            <Toaster richColors position="top-right" />
+            <Toaster richColors position="bottom-center" />
             {children}
           </AuthProvider>
         </ThemeProvider>

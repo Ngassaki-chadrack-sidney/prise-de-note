@@ -174,7 +174,7 @@ const NotesEditor: React.FC<NotesEditorProps> = ({
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-background">
-      {/* En-tête avec titre et actions */}
+
       <div className="mb-6 border-b pb-4">
         <input
           type="text"
@@ -208,16 +208,6 @@ const NotesEditor: React.FC<NotesEditorProps> = ({
                 )}
               </Button>
             )}
-
-            <Button
-              onClick={handleExport}
-              disabled={!editorReady}
-              variant={"default"}
-              className="flex items-center px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              <FileDown className="w-4 h-4 mr-2" />
-              Exporter
-            </Button>
 
             {!readOnly && onDelete && initialData?.id && (
               <Button

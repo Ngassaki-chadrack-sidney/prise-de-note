@@ -8,13 +8,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { SidebarFooter } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   Moon,
   Sun,
   Search,
-  Plus,
   FileText,
   User,
   LogOut,
@@ -22,6 +20,7 @@ import {
   BookOpen,
   Edit3,
   ArrowLeft,
+  X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -46,7 +45,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useTheme } from "next-themes";
 
@@ -64,7 +62,7 @@ export default function Home() {
   useEffect(() => {
     setMounted(true);
   }, []);
-  // Fonction pour créer une note
+
   async function CreateNote(title: string, content?: string) {
     const result = await createNote(title, content);
 
@@ -80,7 +78,7 @@ export default function Home() {
 
     toast.success("Note créée avec succès");
     setNewNote("");
-    await GetAllNote(); // Recharger les notes
+    await GetAllNote();
 
     // Sélectionner la nouvelle note et passer en mode édition
     if (result.data?.id) {
@@ -124,9 +122,9 @@ export default function Home() {
     }
 
     toast.success("Note supprimée avec succès");
-    setSelectedNote(null); // Désélectionner la note
-    setIsEditing(false); // Sortir du mode édition
-    await GetAllNote(); // Recharger les notes
+    setSelectedNote(null);
+    setIsEditing(false);
+    await GetAllNote();
   }
 
   // Fonction pour sauvegarder une note avec le contenu Editor.js
@@ -453,7 +451,7 @@ export default function Home() {
 
       {/* Zone principale */}
       <motion.div
-        className="min-h-screen w-full flex justify-center items-center overflow-y-hidden"
+        className="min-h-screen w-full flex justify-center overflow-y-auto"
         variants={itemVariants}
       >
         {selectedNote ? (
@@ -461,21 +459,35 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="w-full max-w-5xl px-4"
+            className="w-full max-w-5xl px-4 py-6"
           >
             {isEditing ? (
               <div className="relative">
-                <motion.button
-                  onClick={() => {
-                    setIsEditing(false);
-                  }}
-                  className="absolute -top-16 left-0 z-10 flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:opacity-90 transition-colors shadow-md"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  Retour à la lecture
-                </motion.button>
+                <div className="mb-4 flex flex-wrap gap-2">
+                  <motion.button
+                    onClick={() => {
+                      setSelectedNote(null);
+                      setIsEditing(false);
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-md"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <X className="w-4 h-4" />
+                    Quitter la note
+                  </motion.button>
+                  <motion.button
+                    onClick={() => {
+                      setIsEditing(false);
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-md"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    Retour à la lecture
+                  </motion.button>
+                </div>
                 <NotesEditor
                   initialData={getCurrentNoteData()}
                   onSave={handleSaveNote}
@@ -485,43 +497,36 @@ export default function Home() {
                 />
               </div>
             ) : (
-              <Card className="w-full h-[80vh] overflow-y-auto scroll-auto">
+              <Card className="w-full h-[95vh] overflow-y-auto scroll-auto">
                 <div className="p-8">
-                  <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-2xl font-semibold">
-                      {filteredNotes.find((n) => n.id === selectedNote)?.title}
-                    </h1>
+                  <div className="flex items-center justify-start mb-6">
                     <div className="flex gap-2">
-                      <motion.button
+                      <Button
                         onClick={() => {
                           setSelectedNote(null);
                           setIsEditing(false);
                         }}
-                        className="flex items-center gap-2 px-3 py-2 bg-secondary text-secondary-foreground rounded-md"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                        variant={"default"}
                       >
-                        <ArrowLeft className="w-4 h-4" />
+                        <X className="w-4 h-4" />
                         Quitter la note
-                      </motion.button>
-                      <motion.button
+                      </Button>
+                      <Button
                         onClick={() => setIsEditing(true)}
                         className="flex items-center gap-2 px-3 py-2 bg-primary text-primary-foreground rounded-md"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                        variant={"default"}
                       >
                         <Edit3 className="w-4 h-4" />
                         Modifier
-                      </motion.button>
-                      <motion.button
+                      </Button>
+                      <Button
                         onClick={() => DeleteNote(selectedNote as string)}
-                        className="flex items-center gap-2 px-3 py-2 bg-destructive text-destructive-foreground rounded-md"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                        className="flex items-center gap-2 px-3 py-2 bg-destructive text-white rounded-md"
+                        variant={"destructive"}
                       >
                         <Trash2 className="w-4 h-4" />
                         Supprimer
-                      </motion.button>
+                      </Button>
                     </div>
                   </div>
                   <div className="rounded-md border">

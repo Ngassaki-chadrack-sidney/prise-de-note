@@ -49,6 +49,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    NextResponse.redirect("/login");
     return NextResponse.json(
       { message: "Mot de passe réinitialisé avec succès" },
       { status: 200 }

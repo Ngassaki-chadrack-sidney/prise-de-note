@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, validatePassword } from "@/lib/password";
 import { signToken, signRefreshToken } from "@/lib/jwt";
-// Removed unused imports
 
 export async function POST(request: NextRequest) {
   try {
@@ -78,14 +77,14 @@ export async function POST(request: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60, // 7 jours
+      maxAge: 7 * 24 * 60 * 60, 
     });
 
     response.cookies.set("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 30 * 24 * 60 * 60, // 30 jours
+      maxAge: 30 * 24 * 60 * 60,
     });
 
     return response;

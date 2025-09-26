@@ -12,7 +12,7 @@ import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Loader2, Mail, Lock, LogIn } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -25,11 +25,7 @@ export default function LoginPage() {
 
   const { login } = useAuth();
   const router = useRouter();
-  // const searchParams = useSearchParams();
 
-  // const callbackUrl = searchParams.get("callbackUrl") || "/";
-
-  // React Hook Form avec validation Zod
   const {
     register,
     handleSubmit,
@@ -63,6 +59,7 @@ export default function LoginPage() {
           playsInline
         />
       </div>
+      
       <div className="flex items-center justify-center p-6">
         <Card className="w-full bg-background max-w-xl border-none shadow-none">
           <div className="p-6">

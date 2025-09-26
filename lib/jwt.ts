@@ -14,7 +14,7 @@ export async function signToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): Promi
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime('7d') // Token valide 7 jours
+    .setExpirationTime('7d')
     .sign(secret)
 }
 
@@ -33,6 +33,6 @@ export async function signRefreshToken(payload: Omit<JWTPayload, 'iat' | 'exp'>)
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime('30d') // Refresh token valide 30 jours
+    .setExpirationTime('30d')
     .sign(secret)
 }
